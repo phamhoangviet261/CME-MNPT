@@ -16,6 +16,9 @@ const AccountSchema = new Schema({
         type: String,
         enum: ['Admin', 'User'],
     },
+    info:{
+        type: Array
+    },
     status: String
 }, { timestamps: true })
 

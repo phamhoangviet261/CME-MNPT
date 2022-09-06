@@ -12,7 +12,7 @@ const AccountSchema = new Schema({
         type: String
     },
     receiver:{
-        type: Array
+        type: Object
     },
     total: Number,
     purpose: String,

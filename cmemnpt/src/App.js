@@ -4,16 +4,22 @@ import axios from 'axios'
 function App() {  
   const [invoices, setInvoices] = useState();
   const [accounts, setAccounts] = useState();
+  const [totalInMonth, setTotalInMonth] = useState();
+  const [pw, setPw] = useState();
   useEffect(() =>{
     const callAPI = async () => {
-      const res = await axios.get(`${'http://localhost:5000/api/v1'}/invoice/month/9`)
+      const month = new Date().getMonth() + 1;
+      const res = await axios.get(`${'http://localhost:5000/api/v1'}/invoice/month/${month}`)
       setInvoices(res.data.data);
       setAccounts(res.data.accounts);
+      setTotalInMonth(res.data.totalInMonth)
+      console.log(res.data)
     }
     callAPI();
   }, [])
 
   const clearAll = async () => {
+    if(pw != 10052008) return;
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
     var browserName  = navigator.appName;
@@ -89,16 +95,37 @@ function App() {
 
     const res = await axios.post(`${'http://localhost:5000/api/v1'}/invoice/deleteAll`, {dataBrowser, dataOS})
     console.log(res.data)
+    window.location.reload();
   }
   return (
     <div>
       <h2 style={{textAlign: 'center'}} className="my-5">Tinh Tien Thui Nha</h2>
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Danh</th>
+            <th scope="col">Dang</th>
+            <th scope="col">Viet</th>
+            <th scope="col">Thinh</th>
+            <th scope="col">Bao</th>
+          </tr>
+        </thead>
+        <tbody>
+          {totalInMonth && <tr>
+            <td>{`${totalInMonth['MNPT000']}.000`}</td>
+            <td>{`${totalInMonth['MNPT001']}.000`}</td>
+            <td>{`${totalInMonth['MNPT002']}.000`}</td>
+            <td>{`${totalInMonth['MNPT003']}.000`}</td>
+            <td>{`${totalInMonth['MNPT004']}.000`}</td>
+            </tr>}
+        </tbody>
+      </table>
       <NewInvoice accounts={accounts}></NewInvoice>
       <table className="table table-hover">
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Dang</th>
+            <th scope="col">Danh</th>
             <th scope="col">Dang</th>
             <th scope="col">Viet</th>
             <th scope="col">Thinh</th>
@@ -141,7 +168,7 @@ function App() {
             </div>
             <div className="modal-body">
               <h4>Nhap Mat Khau</h4>
-              <input type="password" id="inputPassword5" className="form-control" aria-describedby="passwordHelpBlock" />
+              <input type="password" id="inputPassword5" className="form-control" aria-describedby="passwordHelpBlock" onChange={e => setPw(e.target.value)}/>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -150,6 +177,8 @@ function App() {
           </div>
         </div>
       </div>
+
+      
     </div>
   );
 }

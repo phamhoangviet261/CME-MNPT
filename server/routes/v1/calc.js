@@ -8,7 +8,10 @@ const Account = require('../../models/Account')
 router.get('/', async (req, res, next) => {
     try {
         const data = await Invoice.find({});
-
+        let fakeData = JSON.parse(JSON.stringify(data));
+        for(let i = 0; i < fakeData.length; i++){
+            let item = fakeData.receiver;
+        }
         return res.status(200).json({success: true, data});
     } catch (errors) {
         console.log(errors);
@@ -20,6 +23,9 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const {payer, receiver, total, purpose} = req.body;
+        if(!payer || !receiver || !total || !purpose){
+            return res.status(400).json({success: false, message: "Invalid params"});
+        }
         const invoices = await Invoice.find({});
         var today = new Date();
         var day = String(today.getDate()).padStart(2, '0');
@@ -28,14 +34,17 @@ router.post('/', async (req, res, next) => {
 
         let r = []
         for(let i = 0; i < receiver.length; i++) {
-            r.push(`${receiver[i]}-${total/receiver.length}`)
+            r.push(`${receiver[i]}-${Math.ceil(total/receiver.length)}`)
         }
 
-        let detailInMonth = {};        
+        let detailInMonth = {};   
+        let totalAgain = 0;     
         for(const re of receiver) {
-            detailInMonth[re] = 0 - parseInt(total/receiver.length);
+            detailInMonth[re] = 0 - Math.ceil(total/receiver.length);
+            totalAgain+=Math.ceil(total/receiver.length)
         }
-        detailInMonth[payer] = detailInMonth[payer] ? detailInMonth[payer] + parseInt(total) : parseInt(total);
+        
+        detailInMonth[payer] = detailInMonth[payer] ? detailInMonth[payer] + parseInt(totalAgain) : parseInt(totalAgain);
         let idGen = Math.random().toString().slice(2,12);
         const cus = new Invoice({id: `inv${idGen}`, payer, receiver: detailInMonth, total, purpose, day, month, year})
         await cus.save()

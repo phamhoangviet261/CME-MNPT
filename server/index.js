@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
 
 app.use(cookieParser());
 
-app.use('/api/v1/auth', require('./routes/v1/auth'));
+// app.use('/api/v1/auth', require('./routes/v1/auth'));
 app.use('/api/v1/account', require('./routes/v1/account'));
 app.use('/api/v1/invoice', require('./routes/v1/calc'));
 const PORT = process.env.PORT || 5000

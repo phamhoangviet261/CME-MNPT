@@ -9,7 +9,7 @@ function App() {
   useEffect(() =>{
     const callAPI = async () => {
       const month = new Date().getMonth() + 1;
-      const res = await axios.get(`${'http://localhost:5000/api/v1'}/invoice/month/${month}`)
+      const res = await axios.get(`${'https://api-mnpt-cme.vercel.app/api/v1'}/invoice/month/${month}`)
       setInvoices(res.data.data);
       setAccounts(res.data.accounts);
       setTotalInMonth(res.data.totalInMonth)
@@ -93,7 +93,7 @@ function App() {
 
     const dataOS = OSName;
 
-    const res = await axios.post(`${'http://localhost:5000/api/v1'}/invoice/deleteAll`, {dataBrowser, dataOS})
+    const res = await axios.post(`${'https://api-mnpt-cme.vercel.app/api/v1'}/invoice/deleteAll`, {dataBrowser, dataOS})
     console.log(res.data)
     window.location.reload();
   }
@@ -207,7 +207,7 @@ const NewInvoice = ({accounts}) => {
       console.log('Missing arrguments: ', {payer, receiver, total, purpose});
       return;
     }
-    const res = await axios.post(`${'http://localhost:5000/api/v1'}/invoice`, {
+    const res = await axios.post(`${'https://api-mnpt-cme.vercel.app/api/v1'}/invoice`, {
       payer, receiver, total, purpose
     })
     console.log(res.data)

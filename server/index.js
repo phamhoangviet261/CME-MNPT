@@ -49,3 +49,5 @@ app.listen(PORT, () => {
   console.log(`------------------------------------------------------------------`);
   console.log(`Server ${process.env.MONGODB_DATABSE_NAME} started on PORT ${PORT}`)
 })
+
+module.exports = app;

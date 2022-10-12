@@ -189,7 +189,16 @@ const NewInvoice = ({accounts}) => {
   const [receiver, setReceiver] = useState([]);
   const [total, setTotal] = useState();
   const [purpose, setPurpose] = useState('');
-  const handleAddReceiver= (id) => {
+  const handleAddReceiver= (id) => {    
+    if(id == 'all'){
+      const l = ['MNPT000', 'MNPT001', 'MNPT002', 'MNPT003', 'MNPT004'];
+      if(receiver.length == 0){
+        setReceiver(l)  
+      } else {
+        setReceiver([])  
+      }
+      return;
+    }
     let r = JSON.parse(JSON.stringify(receiver));
     if(r.includes(id)){
       const index = r.indexOf(id);
@@ -199,7 +208,7 @@ const NewInvoice = ({accounts}) => {
     } else {
       r.push(id)
     }
-    setReceiver(r)
+    setReceiver(r)    
   }
 
   const handleAdd = async () => {
@@ -222,6 +231,7 @@ const NewInvoice = ({accounts}) => {
     </div>
     <h4 style={{margin: '20px'}}>Nguoi nhan:</h4>
     <div>
+    <button type="button" className={"btn-receiver mr-1 my-2 " + (receiver.length == 5 ? "active" : "")} onClick={() => handleAddReceiver('all')}>{`Tat ca`}</button>
     {accounts && accounts.map((item, index) => {
       return  <button key={index} type="button" className={"btn-receiver mr-1 my-2 " + (receiver.includes(item.id) ? "active" : "")} onClick={() => handleAddReceiver(item.id)}>{item.name}</button>      
     })}

@@ -211,8 +211,8 @@ function App() {
 
 const NewInvoice = ({accounts}) => {
   const queryClient = useQueryClient()
-  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
-  const SERVER = 'http://localhost:5001/api/v1'
+  const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  // const SERVER = 'http://localhost:5001/api/v1'
   const [payer, setPayer] = useState();
   const [receiver, setReceiver] = useState([]);
   const [total, setTotal] = useState('');

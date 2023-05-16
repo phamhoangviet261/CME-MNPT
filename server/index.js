@@ -43,6 +43,7 @@ app.use(cookieParser());
 // app.use('/api/v1/auth', require('./routes/v1/auth'));
 app.use('/api/v1/account', require('./routes/v1/account'));
 app.use('/api/v1/invoice', require('./routes/v1/calc'));
+app.use('/api/v1/fake', require('./routes/v1/fake-image'));
 const PORT = 5001
 
 app.listen(PORT, () => {

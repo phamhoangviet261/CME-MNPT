@@ -1,23 +1,48 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+
 
 function App() {  
-  const [invoices, setInvoices] = useState();
-  const [accounts, setAccounts] = useState();
-  const [totalInMonth, setTotalInMonth] = useState();
+  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  const SERVER = 'http://localhost:5001/api/v1'
+  // const [invoices, setInvoices] = useState();
+  // const [accounts, setAccounts] = useState();
+  // const [totalInMonth, setTotalInMonth] = useState([]);
   const [pw, setPw] = useState();
   useEffect(() =>{
     const callAPI = async () => {
-      const month = new Date().getMonth() + 1;
-      const res = await axios.get(`${'https://api-mnpt-cme.vercel.app/api/v1'}/invoice/month/${month}`)
-      setInvoices(res.data.data);
-      setAccounts(res.data.accounts);
-      setTotalInMonth(res.data.totalInMonth)
-      console.log(res.data)
+      // const month = new Date().getMonth() + 2;
+      // const year = new Date().getFullYear();
+      // const res = await axios.get(`${SERVER}/invoice/month/${month}/year/${year}`)
+      // setInvoices(res.data.data);
+      // setAccounts(res.data.accounts);
+      // setTotalInMonth(res.data.totalInMonth)
+      // console.log(res.data)
     }
     callAPI();
   }, [])
 
+  const getInvoices = useQuery({
+    queryKey: ['invoices'],
+    queryFn: () => {
+      const month = new Date().getMonth() + 2;
+      const year = new Date().getFullYear();
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort()
+      }, 5000)
+      return axios.get(`${SERVER}/invoice/month/${3}/year/${year}`)
+    },
+    onSuccess: () => {
+      // setInvoices(res.data.data);
+      // setAccounts(res.data.accounts);
+      // setTotalInMonth(res.data.totalInMonth)
+    },
+    keepPreviousData: true,
+    retry: 0
+  })
+  console.log({getInvoices})
   const clearAll = async () => {
     if(pw != 10052008) return;
     var nVer = navigator.appVersion;
@@ -111,16 +136,16 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {totalInMonth && <tr>
-            <td>{`${totalInMonth['MNPT000']}.000`}</td>
-            <td>{`${totalInMonth['MNPT001']}.000`}</td>
-            <td>{`${totalInMonth['MNPT002']}.000`}</td>
-            <td>{`${totalInMonth['MNPT003']}.000`}</td>
-            <td>{`${totalInMonth['MNPT004']}.000`}</td>
+          {!getInvoices.isLoading && getInvoices.data?.data && <tr>
+            <td>{`${getInvoices.data?.data.totalInMonth['MNPT000']}.000`}</td>
+            <td>{`${getInvoices.data?.data.totalInMonth['MNPT001']}.000`}</td>
+            <td>{`${getInvoices.data?.data.totalInMonth['MNPT002']}.000`}</td>
+            <td>{`${getInvoices.data?.data.totalInMonth['MNPT003']}.000`}</td>
+            <td>{`${getInvoices.data?.data.totalInMonth['MNPT004']}.000`}</td>
             </tr>}
         </tbody>
       </table>
-      <NewInvoice accounts={accounts}></NewInvoice>
+      <NewInvoice accounts={getInvoices.data?.data.accounts}></NewInvoice>
       <table className="table table-hover">
         <thead>
           <tr>
@@ -137,7 +162,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {invoices && invoices.map((item, index) => {
+          {!getInvoices.isLoading && getInvoices.data?.data.data && getInvoices.data?.data.data.map((item, index) => {
             return <tr key={index}>
               <th scope="row">{index+1}</th>
               <td style={{ background: item.payer == 'MNPT000' ? "#2596be" : "none"}}>{item.receiver['MNPT000']}</td>
@@ -185,9 +210,12 @@ function App() {
 
 
 const NewInvoice = ({accounts}) => {
+  const queryClient = useQueryClient()
+  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  const SERVER = 'http://localhost:5001/api/v1'
   const [payer, setPayer] = useState();
   const [receiver, setReceiver] = useState([]);
-  const [total, setTotal] = useState();
+  const [total, setTotal] = useState('');
   const [purpose, setPurpose] = useState('');
   const handleAddReceiver= (id) => {    
     if(id == 'all'){
@@ -212,16 +240,41 @@ const NewInvoice = ({accounts}) => {
   }
 
   const handleAdd = async () => {
-    if(!payer || !receiver || !total) {
-      console.log('Missing arrguments: ', {payer, receiver, total, purpose});
-      return;
-    }
-    const res = await axios.post(`${'https://api-mnpt-cme.vercel.app/api/v1'}/invoice`, {
-      payer, receiver, total, purpose
-    })
-    console.log(res.data)
-    window.location.reload();
+    // if(!payer || !receiver || !total) {
+    //   console.log('Missing arrguments: ', {payer, receiver, total, purpose});
+    //   return;
+    // }
+    // const res = await axios.post(`${SERVER}/invoice`, {
+    //   payer, receiver, total, purpose
+    // })
+    // console.log(res.data)
+    // window.location.reload();
+    addInvoice.mutate()
   }
+
+  const addInvoice = useMutation({
+    mutationFn: () => {
+      if(!payer || !receiver || !total) {
+        console.log('Missing arrguments: ', {payer, receiver, total, purpose});
+        return;
+      }
+      console.log({
+        payer, receiver, total, purpose
+      })
+      return axios.post(`${SERVER}/invoice`, {
+        payer, receiver, total, purpose
+      })
+    },
+    onSuccess: (data) => {
+      console.log({data})
+      setPayer((prev) => '')
+      setReceiver((prev) => [])
+      setTotal((prev) => '')
+      setPurpose((prev) => '')
+      queryClient.invalidateQueries({ queryKey: ['invoices'] })
+    }
+  })
+
   return <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '20px'}}>
     <h4 style={{margin: '20px'}}>Nguoi chi: {payer}</h4>
     <div>
@@ -238,7 +291,7 @@ const NewInvoice = ({accounts}) => {
     </div>
     <h4 style={{margin: '20px'}}>So tien</h4>
     <div className="input-group w-50">
-      <input type="number" className="form-control" aria-label="Amount (to the nearest dollar)" defaultValue={total} onChange={(e) => {setTotal(e.target.value)}}/>
+      <input type="number" className="form-control" aria-label="Amount (to the nearest dollar)" onChange={(e) => {setTotal(e.target.value)}} value={total}/>
       <div className="input-group-append">
         <span className="input-group-text">000</span>
         <span className="input-group-text">VND</span>
@@ -246,7 +299,7 @@ const NewInvoice = ({accounts}) => {
     </div>
     <h4 style={{margin: '20px'}}>Ly do</h4>
     <div className="input-group w-50">
-      <input className="form-control" defaultValue={purpose} onChange={(e) => setPurpose(e.target.value)}/>
+      <input type='text' className="form-control" onChange={(e) => setPurpose(e.target.value)} value={purpose}/>
     </div>
     <button type="button" className="btn btn-outline-primary mr-1 my-2" onClick={handleAdd}>Them moi</button>
   </div>

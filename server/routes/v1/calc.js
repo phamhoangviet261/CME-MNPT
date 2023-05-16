@@ -29,7 +29,7 @@ router.post('/', async (req, res, next) => {
         const invoices = await Invoice.find({});
         var today = new Date();
         var day = String(today.getDate()).padStart(2, '0');
-        var month = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var month = String(today.getMonth() + 2).padStart(2, '0'); //January is 0!
         var year = today.getFullYear();
 
         let r = []
@@ -56,10 +56,10 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/month/:month', async (req, res, next) => {
+router.get('/month/:month/year/:year', async (req, res, next) => {
     try {
-        const {month} = req.params;
-        const invoices = await Invoice.find({month: month});
+        const {month, year} = req.params;
+        const invoices = await Invoice.find({month: 3, year: year});
         let totalInMonth = {};
         let detailInMonth = []
         const accounts = (await Account.find({})).map(item => {
@@ -87,7 +87,7 @@ router.get('/month/:month', async (req, res, next) => {
             }
         }
 
-        return res.status(200).json({success: true, message: `Invoices in month ${month}`, accounts, totalInMonth, detailInMonth, data: invoices});
+        return res.status(200).json({success: true, message: `Invoices in month ${month}, year ${year}`, accounts, totalInMonth, detailInMonth, data: invoices});        
     } catch (errors) {
         console.log(errors);
         return res.status(400).json({success: false, message: errors.message});
@@ -117,6 +117,19 @@ router.post('/deleteAll', async (req, res, next) => {
 
         let a = await Account.find({});
         return res.status(200).json({success: true, data: a, message: "Delete all invoices", info});
+    } catch (errors) {
+        console.log(errors);
+        return res.status(400).json({success: false, message: errors.message});
+    }
+});
+
+router.post('/delete-month', async (req, res, next) => {
+    try {
+        const {month, year} = req.body;
+        if(!month) return res.status(400).json({success: false, message: 'Invalid month'});
+
+       await Invoice.deleteMany({month: month, year: year})
+        return res.status(200).json({success: true, message: `Delete all invoices in month ${month}, year ${year} `});
     } catch (errors) {
         console.log(errors);
         return res.status(400).json({success: false, message: errors.message});

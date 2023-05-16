@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 
 function App() {  
-  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
-  const SERVER = 'http://localhost:5001/api/v1'
+  const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  // const SERVER = 'http://localhost:5001/api/v1'
   // const [invoices, setInvoices] = useState();
   // const [accounts, setAccounts] = useState();
   // const [totalInMonth, setTotalInMonth] = useState([]);

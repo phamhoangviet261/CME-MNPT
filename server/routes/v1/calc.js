@@ -59,7 +59,7 @@ router.post('/', async (req, res, next) => {
 router.get('/month/:month/year/:year', async (req, res, next) => {
     try {
         const {month, year} = req.params;
-        const invoices = await Invoice.find({month: 3, year: year});
+        const invoices = await Invoice.find({month: month, year: year});
         let totalInMonth = {};
         let detailInMonth = []
         const accounts = (await Account.find({})).map(item => {

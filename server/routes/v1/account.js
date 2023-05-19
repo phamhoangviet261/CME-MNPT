@@ -6,7 +6,7 @@ const Account = require('../../models/Account')
 
 router.get('/', async (req, res, next) => {
     try {
-        const data = await Account.find({});
+        const data = await Account.find({isActive: true});
         return res.status(200).json({success: true, data});
     } catch (errors) {
         console.log(errors);

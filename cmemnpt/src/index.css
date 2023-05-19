@@ -61,3 +61,19 @@ td, th{
   border: 1px solid #fff;
   color: #fff;
 }
+
+.btn-add-user {
+  background-color: #fff;
+  border: none;
+  outline: none;
+  border: 1px solid #47b1db;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-add-user:hover{
+  background-color: #47b1db;
+  border: 1px solid #fff;
+  color: #fff;
+}

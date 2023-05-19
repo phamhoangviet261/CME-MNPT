@@ -124,24 +124,20 @@ function App() {
   }
   return (
     <div>
-      <h2 style={{textAlign: 'center'}} className="my-5">Tinh Tien Thui Nha</h2>
+      <h2 style={{textAlign: 'center'}} className="my-5">ROOM MONEY NOTE</h2>
       <table className="table table-hover">
         <thead>
           <tr>
-            <th scope="col">Danh</th>
-            <th scope="col">Dang</th>
-            <th scope="col">Viet</th>
-            <th scope="col">Thinh</th>
-            <th scope="col">Bao</th>
+            {getInvoices.data?.data.accounts.map(acc => (
+              <th scope="col">{acc.name}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {!getInvoices.isLoading && getInvoices.data?.data && <tr>
-            <td>{`${getInvoices.data?.data.totalInMonth['MNPT000']}.000`}</td>
-            <td>{`${getInvoices.data?.data.totalInMonth['MNPT001']}.000`}</td>
-            <td>{`${getInvoices.data?.data.totalInMonth['MNPT002']}.000`}</td>
-            <td>{`${getInvoices.data?.data.totalInMonth['MNPT003']}.000`}</td>
-            <td>{`${getInvoices.data?.data.totalInMonth['MNPT004']}.000`}</td>
+            {getInvoices.data?.data.accounts.map(acc => (
+              <td>{`${getInvoices.data?.data.totalInMonth[`${acc.id}`]}.000`}</td>
+            ))}
             </tr>}
         </tbody>
       </table>
@@ -150,11 +146,9 @@ function App() {
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Danh</th>
-            <th scope="col">Dang</th>
-            <th scope="col">Viet</th>
-            <th scope="col">Thinh</th>
-            <th scope="col">Bao</th>
+            {getInvoices.data?.data.accounts.map(acc => (
+              <th scope="col">{acc.name}</th>
+            ))}
             <th scope="col">Total</th>
             <th scope="col" className="hidden-mobile">Purpose</th>
             <th scope="col" className="hidden-mobile">Timestamp</th>
@@ -165,11 +159,9 @@ function App() {
           {!getInvoices.isLoading && getInvoices.data?.data.data && getInvoices.data?.data.data.map((item, index) => {
             return <tr key={index}>
               <th scope="row">{index+1}</th>
-              <td style={{ background: item.payer == 'MNPT000' ? "#2596be" : "none"}}>{item.receiver['MNPT000']}</td>
-              <td style={{ background: item.payer == 'MNPT001' ? "#2596be" : "none"}}>{item.receiver['MNPT001']}</td>
-              <td style={{ background: item.payer == 'MNPT002' ? "#2596be" : "none"}}>{item.receiver['MNPT002']}</td>
-              <td style={{ background: item.payer == 'MNPT003' ? "#2596be" : "none"}}>{item.receiver['MNPT003']}</td>
-              <td style={{ background: item.payer == 'MNPT004' ? "#2596be" : "none"}}>{item.receiver['MNPT004']}</td>
+              {getInvoices.data?.data.accounts.map(acc => (
+                <td style={{ background: item.payer == `${acc.id}` ? "#2596be" : "none"}}>{item.receiver[`${acc.id}`]}</td>
+              ))}
               <td style={{fontWeight: 'bold'}}>{item.total}</td>
               <td style={{maxWidth: '100px', overflowWrap: 'anywhere'}} className="hidden-mobile">{item.purpose}</td>
               <td className="hidden-mobile">{`${item.day}/${item.month}/${item.year}`}</td>
@@ -208,6 +200,14 @@ function App() {
   );
 }
 
+const isAll = (receivers) => {
+  return receivers.includes('MNPT000') && receivers.includes('MNPT001') && receivers.includes('MNPT002') && receivers.includes('MNPT003')
+}
+
+const handleNewUser = () => {
+  alert("Feature not available")
+}
+
 
 const NewInvoice = ({accounts}) => {
   const queryClient = useQueryClient()
@@ -219,7 +219,7 @@ const NewInvoice = ({accounts}) => {
   const [purpose, setPurpose] = useState('');
   const handleAddReceiver= (id) => {    
     if(id == 'all'){
-      const l = ['MNPT000', 'MNPT001', 'MNPT002', 'MNPT003', 'MNPT004'];
+      const l = ['MNPT000', 'MNPT001', 'MNPT002', 'MNPT003'];
       if(receiver.length == 0){
         setReceiver(l)  
       } else {
@@ -276,20 +276,21 @@ const NewInvoice = ({accounts}) => {
   })
 
   return <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '20px'}}>
-    <h4 style={{margin: '20px'}}>Nguoi chi: {payer}</h4>
+    <h4 style={{margin: '20px'}}>PAYER: {payer}</h4>
     <div>
     {accounts && accounts.map((item, index) => {
       return  <button key={index} type="button" className={"btn-payer mr-1 my-2 " + (payer == item.id ? "active" : "")} onClick={() => {setPayer(item.id)}}>{item.name}</button>      
     })}
     </div>
-    <h4 style={{margin: '20px'}}>Nguoi nhan:</h4>
+    <h4 style={{margin: '20px'}}>USER:</h4>
     <div>
-    <button type="button" className={"btn-receiver mr-1 my-2 " + (receiver.length == 5 ? "active" : "")} onClick={() => handleAddReceiver('all')}>{`Tat ca`}</button>
+    <button type="button" className={"btn-receiver mr-1 my-2 " + (isAll(receiver) ? "active" : "")} onClick={() => handleAddReceiver('all')}>ALL</button>
     {accounts && accounts.map((item, index) => {
       return  <button key={index} type="button" className={"btn-receiver mr-1 my-2 " + (receiver.includes(item.id) ? "active" : "")} onClick={() => handleAddReceiver(item.id)}>{item.name}</button>      
     })}
+    <button type="button" className={"btn-add-user mr-1 my-2"} onClick={() => handleNewUser()}>New User</button>
     </div>
-    <h4 style={{margin: '20px'}}>So tien</h4>
+    <h4 style={{margin: '20px'}}>MONEY: </h4>
     <div className="input-group w-50">
       <input type="number" className="form-control" aria-label="Amount (to the nearest dollar)" onChange={(e) => {setTotal(e.target.value)}} value={total}/>
       <div className="input-group-append">
@@ -297,7 +298,7 @@ const NewInvoice = ({accounts}) => {
         <span className="input-group-text">VND</span>
       </div>
     </div>
-    <h4 style={{margin: '20px'}}>Ly do</h4>
+    <h4 style={{margin: '20px'}}>PURPOSE: </h4>
     <div className="input-group w-50">
       <input type='text' className="form-control" onChange={(e) => setPurpose(e.target.value)} value={purpose}/>
     </div>

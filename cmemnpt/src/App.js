@@ -4,12 +4,39 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 
 function App() {
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  
   const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
   // const SERVER = 'http://localhost:5001/api/v1'
   // const [invoices, setInvoices] = useState();
   // const [accounts, setAccounts] = useState();
   // const [totalInMonth, setTotalInMonth] = useState([]);
   const [pw, setPw] = useState();
+
+  const [month, setMonth] = useState(params.month || new Date().getMonth() + 1)
+  const[year, setYear] = useState(params.year || new Date().getFullYear())
+
+  const getInvoices = useQuery({
+    queryKey: ['invoices'],
+    queryFn: () => {
+      // const month = new Date().getMonth() + 1;
+      // const year = new Date().getFullYear();
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort()
+      }, 5000)
+      return axios.get(`${SERVER}/invoice/month/${month}/year/${year}`)
+    },
+    onSuccess: () => {
+      // setInvoices(res.data.data);
+      // setAccounts(res.data.accounts);
+      // setTotalInMonth(res.data.totalInMonth)
+    },
+    keepPreviousData: false,
+    retry: 0
+  })
+
   useEffect(() => {
     const callAPI = async () => {
       // const month = new Date().getMonth() + 2;
@@ -23,25 +50,6 @@ function App() {
     callAPI();
   }, [])
 
-  const getInvoices = useQuery({
-    queryKey: ['invoices'],
-    queryFn: () => {
-      const month = new Date().getMonth() + 1;
-      const year = new Date().getFullYear();
-      const controller = new AbortController()
-      setTimeout(() => {
-        controller.abort()
-      }, 5000)
-      return axios.get(`${SERVER}/invoice/month/${month}/year/${year}`)
-    },
-    onSuccess: () => {
-      // setInvoices(res.data.data);
-      // setAccounts(res.data.accounts);
-      // setTotalInMonth(res.data.totalInMonth)
-    },
-    keepPreviousData: true,
-    retry: 0
-  })
   console.log({ getInvoices })
   const clearAll = async () => {
     if (pw != 10052008) return;
@@ -124,8 +132,11 @@ function App() {
   return (
     <div style={{
       padding: "20px",
-      backgroundColor: "aliceblue"
+      backgroundColor: "aliceblue",
+      position: "relative"
     }}>
+        <button onClick={() => {window.location.assign(`/?month=${month > 1 ? month - 1 : 12}&year=${month > 1 ? year : year - 1}`)}} style={{position: "absolute", top: "40px", left: "40px"}} className='btn btn-info'>PREVIOUS MONTH</button>
+        <button onClick={() => {window.location.assign(`/?month=${month < 12 ? month + 1 : 1}&year=${month < 12 ? year : year + 1}`)}} style={{position: "absolute", top: "40px", right: "40px"}} className='btn btn-info'>NEXT MONTH</button>
       <div style={{
       boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
       padding: "20px",
@@ -141,14 +152,14 @@ function App() {
             <thead style={{backgroundColor: "#ddd"}}>
               <tr>
                 {getInvoices.data?.data.accounts.map(acc => (
-                  <th scope="col" width="200px">{acc.name}</th>
+                  <th key={acc.id} scope="col" width="200px">{acc.name}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {!getInvoices.isLoading && getInvoices.data?.data && <tr>
                 {getInvoices.data?.data.accounts.map(acc => (
-                  <td>{`${getInvoices.data?.data.totalInMonth[`${acc.id}`]}.000`}</td>
+                  <td key={acc.id}>{`${getInvoices.data?.data.totalInMonth[`${acc.id}`]}.000`}</td>
                 ))}
               </tr>}
             </tbody>
@@ -165,7 +176,7 @@ function App() {
               <tr>
                 <th scope="col">#</th>
                 {getInvoices.data?.data.accounts.map(acc => (
-                  <th scope="col">{acc.name}</th>
+                  <th key={acc.id} scope="col">{acc.name}</th>
                 ))}
                 <th scope="col">Total</th>
                 <th scope="col" className="hidden-mobile">Purpose</th>
@@ -178,7 +189,7 @@ function App() {
                 return <tr key={index}>
                   <th scope="row">{index + 1}</th>
                   {getInvoices.data?.data.accounts.map(acc => (
-                    <td style={{ background: item.payer == `${acc.id}` ? "#2596be" : "none" }}>{item.receiver[`${acc.id}`]}</td>
+                    <td key={acc.id} style={{ background: item.payer == `${acc.id}` ? "#2596be" : "none" }}>{item.receiver[`${acc.id}`]}</td>
                   ))}
                   <td style={{ fontWeight: 'bold' }}>{item.total}</td>
                   <td style={{ maxWidth: '100px', overflowWrap: 'anywhere' }} className="hidden-mobile">{item.purpose}</td>

@@ -26,13 +26,13 @@ function App() {
   const getInvoices = useQuery({
     queryKey: ['invoices'],
     queryFn: () => {
-      const month = new Date().getMonth() + 2;
+      const month = new Date().getMonth() + 1;
       const year = new Date().getFullYear();
       const controller = new AbortController()
       setTimeout(() => {
         controller.abort()
       }, 5000)
-      return axios.get(`${SERVER}/invoice/month/${3}/year/${year}`)
+      return axios.get(`${SERVER}/invoice/month/${month}/year/${year}`)
     },
     onSuccess: () => {
       // setInvoices(res.data.data);
@@ -211,8 +211,8 @@ function App() {
 
 const NewInvoice = ({accounts}) => {
   const queryClient = useQueryClient()
-  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
-  const SERVER = 'http://localhost:5001/api/v1'
+  const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  // const SERVER = 'http://localhost:5001/api/v1'
   const [payer, setPayer] = useState();
   const [receiver, setReceiver] = useState([]);
   const [total, setTotal] = useState('');

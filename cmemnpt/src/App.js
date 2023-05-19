@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 function App() {
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
-  
+
   const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
   // const SERVER = 'http://localhost:5001/api/v1'
   // const [invoices, setInvoices] = useState();
@@ -15,7 +15,7 @@ function App() {
   const [pw, setPw] = useState();
 
   const [month, setMonth] = useState(params.month ? parseInt(params.month) : new Date().getMonth() + 1)
-  const[year, setYear] = useState(params.year ? parseInt(params.year) : new Date().getFullYear())
+  const [year, setYear] = useState(params.year ? parseInt(params.year) : new Date().getFullYear())
 
   const getInvoices = useQuery({
     queryKey: ['invoices'],
@@ -135,22 +135,23 @@ function App() {
       backgroundColor: "aliceblue",
       position: "relative"
     }}>
-        <button onClick={() => {window.location.assign(`/?month=${month > 1 ? month - 1 : 12}&year=${month > 1 ? year : year - 1}`)}} style={{position: "absolute", top: "40px", left: "40px"}} className='btn btn-info'>PREVIOUS MONTH</button>
-        <button onClick={() => {window.location.assign(`/`)}} style={{position: "absolute", top: "40px", left: "50%", transform: "translateX(-50%)"}} className='btn btn-info'>CURRENT MONTH</button>
-        <button onClick={() => {window.location.assign(`/?month=${month < 12 ? month + 1 : 1}&year=${month < 12 ? year : year + 1}`)}} style={{position: "absolute", top: "40px", right: "40px"}} className='btn btn-info'>NEXT MONTH</button>
+      <button onClick={() => { window.location.assign(`/?month=${month > 1 ? month - 1 : 12}&year=${month > 1 ? year : year - 1}`) }} style={{ position: "absolute", top: "40px", left: "40px" }} className='btn btn-info'>PREVIOUS MONTH</button>
+      <button onClick={() => { window.location.assign(`/`) }} style={{ position: "absolute", top: "40px", left: "50%", transform: "translateX(-50%)" }} className='btn btn-info'>CURRENT MONTH</button>
+      <button onClick={() => { window.location.assign(`/?month=${month < 12 ? month + 1 : 1}&year=${month < 12 ? year : year + 1}`) }} style={{ position: "absolute", top: "40px", right: "40px" }} className='btn btn-info'>NEXT MONTH</button>
       <div style={{
-      boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
-      padding: "20px",
-      backgroundColor: "white"
-    }}>
+        boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
+        padding: "20px",
+        backgroundColor: "white"
+      }}>
         <h2 style={{ textAlign: 'center', marginTop: "100px" }}>ROOM MONEY NOTE</h2>
+        <div style={{ textAlign: 'center', margin: "20px" }}><i>MONTH:</i> <strong>{month}</strong>      <i>YEAR:</i> <strong>{year}</strong></div>
         <div style={{
           boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
           width: "fit-content",
           margin: "auto"
         }}>
-          <table className="table" style={{maxWidth: "1000px", margin: "auto"}}>
-            <thead style={{backgroundColor: "#ddd"}}>
+          <table className="table" style={{ maxWidth: "1000px", margin: "auto" }}>
+            <thead style={{ backgroundColor: "#ddd" }}>
               <tr>
                 {getInvoices.data?.data.accounts.map(acc => (
                   <th key={acc.id} scope="col" width="200px">{acc.name}</th>
@@ -166,14 +167,16 @@ function App() {
             </tbody>
           </table>
         </div>
-        <NewInvoice accounts={getInvoices.data?.data.accounts}></NewInvoice>
+        {month === new Date().getMonth() + 1 && year === new Date().getFullYear() && 
+        <NewInvoice accounts={getInvoices.data?.data.accounts}></NewInvoice>}
         <div style={{
           boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
           margin: "auto",
           borderRadius: "5px",
+          marginTop: "20px"
         }}>
           <table className="table table-hover">
-            <thead  style={{backgroundColor: "#ddd"}}>
+            <thead style={{ backgroundColor: "#ddd" }}>
               <tr>
                 <th scope="col">#</th>
                 {getInvoices.data?.data.accounts.map(acc => (
@@ -281,35 +284,37 @@ const NewInvoice = ({ accounts }) => {
     }
   })
 
-  return <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '20px' }}>
-    <h4 style={{ margin: '20px' }}>PAYER: {payer}</h4>
-    <div>
-      {accounts && accounts.map((item, index) => {
-        return <button key={index} type="button" className={"btn-payer mr-1 my-2 " + (payer == item.id ? "active" : "")} onClick={() => { setPayer(item.id) }}>{item.name}</button>
-      })}
-    </div>
-    <h4 style={{ margin: '20px' }}>USER:</h4>
-    <div>
-      <button type="button" className={"btn-receiver mr-1 my-2 " + (isAll(receiver) ? "active" : "")} onClick={() => handleAddReceiver('all')}>ALL</button>
-      {accounts && accounts.map((item, index) => {
-        return <button key={index} type="button" className={"btn-receiver mr-1 my-2 " + (receiver.includes(item.id) ? "active" : "")} onClick={() => handleAddReceiver(item.id)}>{item.name}</button>
-      })}
-      <button type="button" className={"btn-add-user mr-1 my-2"} onClick={() => handleNewUser()}>New User</button>
-    </div>
-    <h4 style={{ margin: '20px' }}>MONEY: </h4>
-    <div className="input-group w-50">
-      <input type="number" className="form-control" aria-label="Amount (to the nearest dollar)" onChange={(e) => { setTotal(e.target.value) }} value={total} />
-      <div className="input-group-append">
-        <span className="input-group-text">000</span>
-        <span className="input-group-text">VND</span>
+  return <>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '20px' }}>
+      <h4 style={{ margin: '20px' }}>PAYER: {payer}</h4>
+      <div>
+        {accounts && accounts.map((item, index) => {
+          return <button key={index} type="button" className={"btn-payer mr-1 my-2 " + (payer == item.id ? "active" : "")} onClick={() => { setPayer(item.id) }}>{item.name}</button>
+        })}
       </div>
+      <h4 style={{ margin: '20px' }}>USER:</h4>
+      <div>
+        <button type="button" className={"btn-receiver mr-1 my-2 " + (isAll(receiver) ? "active" : "")} onClick={() => handleAddReceiver('all')}>ALL</button>
+        {accounts && accounts.map((item, index) => {
+          return <button key={index} type="button" className={"btn-receiver mr-1 my-2 " + (receiver.includes(item.id) ? "active" : "")} onClick={() => handleAddReceiver(item.id)}>{item.name}</button>
+        })}
+        <button type="button" className={"btn-add-user mr-1 my-2"} onClick={() => handleNewUser()}>New User</button>
+      </div>
+      <h4 style={{ margin: '20px' }}>MONEY: </h4>
+      <div className="input-group w-50">
+        <input type="number" className="form-control" aria-label="Amount (to the nearest dollar)" onChange={(e) => { setTotal(e.target.value) }} value={total} />
+        <div className="input-group-append">
+          <span className="input-group-text">000</span>
+          <span className="input-group-text">VND</span>
+        </div>
+      </div>
+      <h4 style={{ margin: '20px' }}>PURPOSE: </h4>
+      <div className="input-group w-50">
+        <input type='text' className="form-control" onChange={(e) => setPurpose(e.target.value)} value={purpose} />
+      </div>
+      <button type="button" className="btn btn-outline-primary mr-1 my-2" onClick={handleAdd}>Add new record</button>
     </div>
-    <h4 style={{ margin: '20px' }}>PURPOSE: </h4>
-    <div className="input-group w-50">
-      <input type='text' className="form-control" onChange={(e) => setPurpose(e.target.value)} value={purpose} />
-    </div>
-    <button type="button" className="btn btn-outline-primary mr-1 my-2" onClick={handleAdd}>Them moi</button>
-  </div>
+  </>
 }
 
 const Button = ({ content, type }) => {

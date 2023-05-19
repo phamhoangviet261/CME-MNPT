@@ -14,8 +14,8 @@ function App() {
   // const [totalInMonth, setTotalInMonth] = useState([]);
   const [pw, setPw] = useState();
 
-  const [month, setMonth] = useState(params.month || new Date().getMonth() + 1)
-  const[year, setYear] = useState(params.year || new Date().getFullYear())
+  const [month, setMonth] = useState(params.month ? parseInt(params.month) : new Date().getMonth() + 1)
+  const[year, setYear] = useState(params.year ? parseInt(params.year) : new Date().getFullYear())
 
   const getInvoices = useQuery({
     queryKey: ['invoices'],
@@ -136,13 +136,14 @@ function App() {
       position: "relative"
     }}>
         <button onClick={() => {window.location.assign(`/?month=${month > 1 ? month - 1 : 12}&year=${month > 1 ? year : year - 1}`)}} style={{position: "absolute", top: "40px", left: "40px"}} className='btn btn-info'>PREVIOUS MONTH</button>
+        <button onClick={() => {window.location.assign(`/`)}} style={{position: "absolute", top: "40px", left: "50%", transform: "translateX(-50%)"}} className='btn btn-info'>CURRENT MONTH</button>
         <button onClick={() => {window.location.assign(`/?month=${month < 12 ? month + 1 : 1}&year=${month < 12 ? year : year + 1}`)}} style={{position: "absolute", top: "40px", right: "40px"}} className='btn btn-info'>NEXT MONTH</button>
       <div style={{
       boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
       padding: "20px",
       backgroundColor: "white"
     }}>
-        <h2 style={{ textAlign: 'center' }} className="my-5">ROOM MONEY NOTE</h2>
+        <h2 style={{ textAlign: 'center', marginTop: "100px" }}>ROOM MONEY NOTE</h2>
         <div style={{
           boxShadow: "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
           width: "fit-content",

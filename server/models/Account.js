@@ -12,6 +12,9 @@ const AccountSchema = new Schema({
         type: String, 
         required: true,
     },
+    isActive: {
+        type: Boolean
+    },
     typeAccount: {
         type: String,
         enum: ['Admin', 'User'],

@@ -95,7 +95,7 @@ router.get('/month/:month/year/:year', async (req, res, next) => {
         const invoices = await Invoice.find({month: month, year: year});
         let totalInMonth = {};
         let detailInMonth = []
-        const accounts = (await Account.find({})).map(item => {
+        const accounts = (await Account.find({isActive: true})).map(item => {
             totalInMonth[item.id] = 0;
             return {id: item.id, name: item.name};
         });

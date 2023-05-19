@@ -5,6 +5,33 @@ const axios = require('axios');
 const Invoice = require('../../models/Invoice')
 const Account = require('../../models/Account')
 
+const listUser = [
+    {
+        id: "MNPT001",
+        name: "Dang"
+    },
+    {
+        id: "MNPT002",
+        name: "Viet"
+    },
+    {
+        id: "MNPT003",
+        name: "Thinh"
+    },
+    {
+        id: "MNPT004",
+        name: "Bao"
+    },
+    {
+        id: "MNPT005",
+        name: "Quyen"
+    },
+    {
+        id: "MNPT000",
+        name: "Danh"
+    }
+]
+
 router.get('/', async (req, res, next) => {
     try {
         const data = await Invoice.find({});
@@ -48,6 +75,12 @@ router.post('/', async (req, res, next) => {
         let idGen = Math.random().toString().slice(2,12);
         const cus = new Invoice({id: `inv${idGen}`, payer, receiver: detailInMonth, total, purpose, day, month, year})
         await cus.save()
+
+        const listReceiverName = receiver.map(item => listUser.filter(user => user.id === item)[0].name)
+
+        let messageText = `-- PAYER: ${listUser.filter(user => user.id === payer)[0].name}\n-- RECEIVER:\n   - ${listReceiverName.join("\n   - ")}\n-- MONEY: ${total}\n-- PURPOSE: ${purpose}`
+
+        const newRes = await axios.get(`https://api.telegram.org/bot6007370060:AAHTLm3o0GwAN2q0JLy-gnVnkQd1ZgBdkPA/sendMessage?chat_id=-1001825407574&text=${messageText}`)
 
         return res.status(200).json({success: true, data: cus});
     } catch (errors) {

@@ -34,7 +34,7 @@ const listUser = [
 
 router.get('/', async (req, res, next) => {
     try {
-        const data = await Invoice.find({});
+        const data = await Invoice.find({isActive: true});
         let fakeData = JSON.parse(JSON.stringify(data));
         for(let i = 0; i < fakeData.length; i++){
             let item = fakeData.receiver;
@@ -73,7 +73,7 @@ router.post('/', async (req, res, next) => {
         
         detailInMonth[payer] = detailInMonth[payer] ? detailInMonth[payer] + parseInt(totalAgain) : parseInt(totalAgain);
         let idGen = Math.random().toString().slice(2,12);
-        const cus = new Invoice({id: `inv${idGen}`, payer, receiver: detailInMonth, total, purpose, day, month, year})
+        const cus = new Invoice({id: `inv${idGen}`, payer, receiver: detailInMonth, total, purpose, day, month, year, isActive: true})
         await cus.save()
 
         const listReceiverName = receiver.map(item => listUser.filter(user => user.id === item)[0].name)
@@ -92,7 +92,7 @@ router.post('/', async (req, res, next) => {
 router.get('/month/:month/year/:year', async (req, res, next) => {
     try {
         const {month, year} = req.params;
-        const invoices = await Invoice.find({month: month, year: year});
+        const invoices = await Invoice.find({month: month, year: year, isActive: true});
         let totalInMonth = {};
         let detailInMonth = []
         const accounts = (await Account.find({isActive: true})).map(item => {
@@ -127,11 +127,10 @@ router.get('/month/:month/year/:year', async (req, res, next) => {
     }
 });
 
-router.get('/delete', async (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
     try {
-        const {invoiceId} = req.body;
-        if(!invoiceId) return res.status(200).json({success: false, data: []});
-        const inv = await Invoice.findOneAndDelete({id: invoiceId});
+        const {id} = req.params
+        const inv = await Invoice.findOneAndUpdate({id},{isActive: false});
         return res.status(200).json({success: true, data: inv});
     } catch (errors) {
         console.log(errors);
@@ -146,7 +145,7 @@ router.post('/deleteAll', async (req, res, next) => {
         let time = new Date();
         let info = JSON.parse(JSON.stringify(acc.info))
         await Account.findOneAndUpdate({id: 'MNPT000'}, {info: info.push({time, data: dataOS+'---'+dataBrowser})});
-        await Invoice.deleteMany();
+        // await Invoice.deleteMany();
 
         let a = await Account.find({});
         return res.status(200).json({success: true, data: a, message: "Delete all invoices", info});
@@ -161,7 +160,7 @@ router.post('/delete-month', async (req, res, next) => {
         const {month, year} = req.body;
         if(!month) return res.status(400).json({success: false, message: 'Invalid month'});
 
-       await Invoice.deleteMany({month: month, year: year})
+    //    await Invoice.deleteMany({month: month, year: year})
         return res.status(200).json({success: true, message: `Delete all invoices in month ${month}, year ${year} `});
     } catch (errors) {
         console.log(errors);

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
-const AccountSchema = new Schema({
+const InvoiceSchema = new Schema({
     id: {
         type: String, 
         required: true,
@@ -14,6 +14,7 @@ const AccountSchema = new Schema({
     receiver:{
         type: Object
     },
+    isActive: Boolean,
     total: Number,
     purpose: String,
     day: Number,
@@ -21,4 +22,4 @@ const AccountSchema = new Schema({
     year: Number
 }, { timestamps: true })
 
-module.exports = mongoose.model('invoices', AccountSchema)
+module.exports = mongoose.model('invoices', InvoiceSchema)

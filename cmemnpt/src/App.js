@@ -7,8 +7,8 @@ function App() {
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
 
-  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
-  const SERVER = 'http://localhost:5001/api/v1'
+  const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  // const SERVER = 'http://localhost:5001/api/v1'
   // const [invoices, setInvoices] = useState();
   // const [accounts, setAccounts] = useState();
   // const [totalInMonth, setTotalInMonth] = useState([]);
@@ -36,6 +36,11 @@ function App() {
     keepPreviousData: false,
     retry: 0
   })
+
+  const handleDelete = (invoiceId) => {
+    const res = axios.delete(`${SERVER}/invoice/${invoiceId}`)
+    window.location.reload();
+  }
 
   useEffect(() => {
     const callAPI = async () => {
@@ -126,7 +131,6 @@ function App() {
     const dataOS = OSName;
 
     const res = await axios.post(`${'https://api-mnpt-cme.vercel.app/api/v1'}/invoice/deleteAll`, { dataBrowser, dataOS })
-    console.log(res.data)
     window.location.reload();
   }
   return (
@@ -198,7 +202,7 @@ function App() {
                   <td style={{ fontWeight: 'bold' }}>{item.total}</td>
                   <td style={{ maxWidth: '100px', overflowWrap: 'anywhere' }} className="hidden-mobile">{item.purpose}</td>
                   <td className="hidden-mobile">{`${item.day}/${item.month}/${item.year}`}</td>
-                  <td style={{ cursor: 'pointer', color: "red" }} className="hidden-mobile">Delete</td>
+                  <td className="hidden-mobile"><span style={{ cursor: 'pointer', color: "red" }} onClick={() => {handleDelete(item.id)}}>Delete</span></td>
                 </tr>
               })}
             </tbody>
@@ -220,8 +224,8 @@ const handleNewUser = () => {
 
 const NewInvoice = ({ accounts }) => {
   const queryClient = useQueryClient()
-  // const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
-  const SERVER = 'http://localhost:5001/api/v1'
+  const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1'
+  // const SERVER = 'http://localhost:5001/api/v1'
   const [payer, setPayer] = useState();
   const [receiver, setReceiver] = useState([]);
   const [total, setTotal] = useState('');

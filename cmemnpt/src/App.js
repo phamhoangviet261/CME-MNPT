@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {useMutation, useQuery, useQueryClient} from 'react-query';
 
-const SERVER = 'https://api-mnpt-cme.vercel.app/api/v1';
+const SERVER = 'http://mnpt.site:5001/api/v1';
 // const SERVER = 'http://localhost:5001/api/v1';
 
 function App() {

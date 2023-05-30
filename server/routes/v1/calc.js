@@ -131,6 +131,8 @@ router.delete('/:id', async (req, res, next) => {
     try {
         const {id} = req.params
         const inv = await Invoice.findOneAndUpdate({id},{isActive: false});
+        const messageText = `Invoice ${id} has been delete`
+        const newRes = await axios.get(`https://api.telegram.org/bot6007370060:AAHTLm3o0GwAN2q0JLy-gnVnkQd1ZgBdkPA/sendMessage?chat_id=-1001825407574&text=${messageText}`)
         return res.status(200).json({success: true, data: inv});
     } catch (errors) {
         console.log(errors);

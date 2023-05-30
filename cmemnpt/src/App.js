@@ -13,6 +13,7 @@ function App() {
   // const [accounts, setAccounts] = useState();
   // const [totalInMonth, setTotalInMonth] = useState([]);
   const [pw, setPw] = useState();
+  const [status, setStatus] = useState("");
 
   const [month, setMonth] = useState(params.month ? parseInt(params.month) : new Date().getMonth() + 1)
   const [year, setYear] = useState(params.year ? parseInt(params.year) : new Date().getFullYear())
@@ -53,9 +54,34 @@ function App() {
       // console.log(res.data)
     }
     callAPI();
+
+
+    const checkStorage = window.localStorage.getItem("roomMoney")
+
+    if (checkStorage) {
+      if (checkStorage === "mnpt") {
+        setStatus("ACTIVE");
+      }
+
+      else if (checkStorage === "fake") {
+        setStatus("BLOCK");
+      }
+
+      else {
+        setStatus("BLOCK")
+      }
+    } else {
+      let pass = prompt('??????????');
+      if (pass === "    ") {
+        window.localStorage.setItem("roomMoney", "mnpt")
+        setStatus("ACTIVE");
+      } else {
+        window.localStorage.setItem("roomMoney", "fake")
+        setStatus("BLOCK");
+      }
+    }
   }, [])
 
-  console.log({ getInvoices })
   const clearAll = async () => {
     if (pw != 10052008) return;
     var nVer = navigator.appVersion;

@@ -1,16 +1,8 @@
-version: "3"
+version: '3'
 services:
   client:
-    image: "dantefarm1411/cme-client"
-    mem_limit: 128m
-    hostname: client
-  server:
-    image: "dantefarm1411/cme-server"
-    mem_limit: 128m
-    hostname: api
-  nginx:
-    image: "dantefarm1411/cme-nginx"
-    mem_limit: 128m
-    hostname: nginx
+    build:
+      dockerfile: Dockerfile
+      context: ./cmemnpt
     ports:
-      - "80:80"
+      - '3000:3000'

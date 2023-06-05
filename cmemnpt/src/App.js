@@ -38,8 +38,8 @@ function App() {
     retry: 0
   });
 
-  const handleDelete = (invoiceId) => {
-    const res = axios.delete(`${SERVER}/invoice/${invoiceId}`);
+  const handleDelete = async (invoiceId) => {
+    const res = await axios.delete(`${SERVER}/invoice/${invoiceId}`);
     window.location.reload();
   };
 
